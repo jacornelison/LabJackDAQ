@@ -26,7 +26,7 @@ That way, you can start the data acquisition from any directory and it should st
 
 Provided you've done the above, open two terminals. In the first terminal, start the data acquisition using `ljdaq` and then enter `auto`.
 
-In the other window, simply enter `dataplot` and the plotter should start plotting the data you've acquired so far. Hit enter in the plotter's window to update the values or any positive number to plot the last N samples acquired.
+In the other window, simply enter `dataplot` and the plotter should start plotting the data you've acquired so far. Hit enter in the plotter's terminal to update the values or any positive number to plot the last N samples acquired.
 
 
 ## Notes
