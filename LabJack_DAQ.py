@@ -175,7 +175,7 @@ def get_field_names(ch, inc):
     fld_name.append(",{0}".format(S[i]))
 
   fld_name.append(",avging_on")
-  fld_name.append(",Notes")
+  #fld_name.append(",Notes")
   return fld_name
 
 def read_volts(ch):
@@ -257,7 +257,7 @@ if __name__ == '__main__':
   print("input enter key to take data point OR input integer for multiple points")
   print("input 'auto' to continously log data, stop with keyboard interrupt")
   print("input 'stop' to stop taking data and close recorder")
-  print("input 'note' to then enter in a note string to be attached to a data point")
+  #print("input 'note' to then enter in a note string to be attached to a data point")
 
   #generate empty note_string
   note_string = []
