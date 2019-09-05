@@ -6,7 +6,7 @@ import numpy as np
 import time
 import argparse
 import datetime
-import os
+import os.path as op
 import glob
 
 def get_args():
@@ -18,30 +18,33 @@ def get_args():
 
 # Main Program
 if __name__ == '__main__':
-  def_dir = "~/LabJackDAQ/data"
+  def_dir = op.join(op.expanduser("~"),"LabJackDAQ","data")
   def_filenamex = ""
   parser, args = get_args()
 
 
   if args.title=="":
-    lof = glob.glob('{0}/*.csv'.format(args.dir))
-    args.title = max(lof, key=os.path.getmtime)
-    filenamex = '{0}'.format(args.title)
+    lof = glob.glob(op.join(args.dir,"*.csv"))
+    if len(lof)>0:
+      args.title = max(lof, key=op.getmtime)
+      filenamex = '{0}'.format(args.title)
+    else:
+      raise NameError("No CSV files found in {0}".format(args.dir))
   else:
-    if args.title[-4::] == ".csv":
-      args.title = args.title[0:-4]
-    filenamex = '{1}/{0}.csv'.format(args.title, args.dir)
+    if not args.title[-4::] == ".csv":
+      args.title = args.title+".csv"
+    filenamex = op.join(args.dir, args.title)
 
-  # Check if filename exists and append a number to the end of it
-  if not os.path.isfile(filenamex):
-    print "File: {0} doesn't exist!".format(args.title)
+  # Check if filename exists
+  if not op.isfile(filenamex):
+    raise NameError("File: {0} doesn't exist!".format(args.title))
   else:
     print "Loading: {0}".format(filenamex)
 
   Ntail = 0
   fig = plt.figure()
   plt.interactive(False)
-  while(1):
+  while True:
 
     # Data will be format: rows = samples, columns = channels
     #d = np.genfromtxt('./20180116_RPS_monitor_2.csv',delimiter=',', skip_header=1)
