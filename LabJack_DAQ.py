@@ -204,7 +204,7 @@ if __name__ == '__main__':
   volt = []
   el_time = []
 
-  def_dir = "/home/bicep/LabJackDaq/data"
+  def_dir = "~/LabJackDaq/data"
 
   def_filenamex ="labjack_generic_daq.csv".format(def_dir, datetime.datetime.now())
   parser, args = get_args()
