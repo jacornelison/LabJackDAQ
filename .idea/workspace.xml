@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5719f389-6fce-4a31-8556-8475198be224" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/James.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LabJack_DAQ.py" beforeDir="false" afterPath="$PROJECT_DIR$/LabJack_DAQ.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plt_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/plt_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,6 +24,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Setup Script" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -86,7 +83,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LabJack_DAQ.py" />
-      <option name="PARAMETERS" value="--test --dir C:\Users\James\Documents\GitHub\LabJackDAQ\data --ow --sr 10" />
+      <option name="PARAMETERS" value="--test --dir C:\Users\James\Documents\GitHub\LabJackDAQ\data --ow --sr 10 --ch &quot;ch1,ch2,ch3&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="multiprocess_sgskip" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LabJackDAQ" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Downloads" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Downloads/multiprocess_sgskip.py" />
+      <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -107,7 +125,28 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plt_data.py" />
-      <option name="PARAMETERS" value="--dir &quot;G:\My Drive\BICEP\RPS\LabJackDAQ&quot;" />
+      <option name="PARAMETERS" value="--dir .\data --refrate 1" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LabJackDAQ" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -118,11 +157,15 @@
     <list>
       <item itemvalue="Python.plt_data" />
       <item itemvalue="Python.LabJack_DAQ" />
+      <item itemvalue="Python.test" />
+      <item itemvalue="Python.multiprocess_sgskip" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.LabJack_DAQ" />
         <item itemvalue="Python.plt_data" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.multiprocess_sgskip" />
       </list>
     </recent_temporary>
   </component>

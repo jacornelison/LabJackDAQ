@@ -4,13 +4,8 @@
 # and digital incinometer (both via USB) for beam mapping
 # operates on unix systems
 
-# JAC 28 Nov 2017
-# Code has been modified for a U6 Labjack
-
-# stop deprecation warning from plt.pause()
-import warnings
-
-warnings.filterwarnings("ignore")
+# JAC 06 Sep 2019
+# Code has been modified for a U6 Labjack and cleaned up a bit
 
 # import other packages
 import usbtmc
@@ -18,12 +13,6 @@ import time
 import datetime
 import serial
 import u6
-
-try:
-    from matplotlib import animation
-except ImportError:
-    import animation
-
 import numpy as np
 import os.path as op
 import argparse
@@ -32,6 +21,7 @@ from threading import Thread
 # Global Variables
 thstat = True
 
+# Wrapper function for threading.
 ###############################################
 def auto_daq(ch,dmmtype):
     global thstat
@@ -40,24 +30,9 @@ def auto_daq(ch,dmmtype):
     return
 
 
-###############################################
 # Subfunction for data recording and logging.
-def get_data(ch,dmmtype):
-    b = []
-    # elif avg == False:
-    #  b = np.zeros((1,3))
-    #  avg = True
-    #  print("Starting integration")
-    #  #note_string = "avging"
-    # else:
-    #  avg = False
-    #  b_mean = np.mean(b[1:,1], axis=0)
-    #  b_err = np.sqrt(np.var(b[1:,1], axis=0)/len(b[1:,2]))
-    #  b_mean2 = np.mean(b[1:,2], axis=0)
-    #  b_err2 = np.sqrt(np.var(b[1:,2], axis=0)/len(b[1:,2]))
-    #  print("Samples: {4}\nMean_1: {0}, Err on Mean_1: {1}\nMean_2: {2}, Err on Mean_2: {3}".format(b_mean, b_err, b_mean2, b_err2, len(b[1:,2])))
-    # del note_string
-
+###############################################
+def get_data(ch, dmmtype):
     # If loop runs faster than the sample rate, average until enough time elapses
     volt = np.zeros(len(ch.split(',')))
     samp_el = 0
@@ -94,14 +69,12 @@ def get_data(ch,dmmtype):
     for i in range(0, len(ch.split(','))):
         z.append(v[i])
 
-    if avg:
-        b = np.append(b, z, axis=0)
-
     fstring = write_data(filenamex, el_time, v, inc_angle, avging)
 
     return fstring
 
 
+# Convert numbers into a comma-separated line and append it to our csv file
 ###############################################
 def write_data(filename, time, volts, angle, avging):
     fs = "{0}".format(time) # Filestring
@@ -121,6 +94,7 @@ def write_data(filename, time, volts, angle, avging):
         csvfile.write("\n")
     return fs
 
+# Determine the field names that go into the csv
 ###############################################
 def get_field_names(ch, inc):
     s = ch.split(',')
@@ -133,7 +107,7 @@ def get_field_names(ch, inc):
     fld_name.append(",avging_on")
     return fld_name
 
-
+# Get values from the dmm
 ###############################################
 def read_volts(ch, dmmtype):
     v = []

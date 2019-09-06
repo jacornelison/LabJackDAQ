@@ -1,31 +1,131 @@
 # plt_data.py
 # JAC 20190904
-# plots data from LabJack_DAQ.py
+# plots data from csv files
 import matplotlib.pyplot as plt
 import numpy as np
-import time
 import argparse
-import datetime
 import os.path as op
 import glob
 
+# Global Variables
+runloop = True
+Ntail = 0
 
+
+# Options for the arg-parser
+###############################################
 def get_args():
     parser = argparse.ArgumentParser(description='Plots timestream of data with various options')
     parser.add_argument("--title", help="Choose a filename. Defaults to newest csv in directory", default=def_filenamex)
     parser.add_argument("--dir", help="dir in filename", default=def_dir)
-    parser.add_argument("--ch",
-                        help="Select number of channels up to 13 by naming them. E.g. \"T,V,T2,V2\" (for labjack only)",
-                        default="AIN0")
+    parser.add_argument("--refrate", help="Set refresh rate in seconds. Default = manual", default=0,
+                        type=float)
     return parser, parser.parse_args()
 
 
+# Main plotting function. Reloads data, then plots all available channels.
+###############################################
+def do_plots(filename, ntail, figure):
+    data = load_data(filename)
+    dnames = data.dtype.names
+    t = dnames[0]
+    tn = data[t]
+    tn -= tn[0]
+    plen = len(dnames) - 2
+    fig.clf()
+    axes = fig.subplots(plen, 1)
+
+    for i in range(1, plen+1):
+
+        dn = data[dnames[i]]
+        ax = axes[i-1]
+        if ntail == 0:
+            ax.plot(tn, dn)
+        else:
+            ax.plot(tn[-ntail:], dn[-ntail:])
+
+        ax.set_title(dnames[i])
+        ax.grid(True)
+        ax.figure.canvas.draw()
+
+    plt.xlabel('Time (s)')
+    plt.subplots_adjust(hspace=1.2)
+    ax.figure.canvas.draw()
+
+
+# Load data
+###############################################
+def load_data(filename):
+    data = np.genfromtxt(filename, delimiter=',', names=True)
+    return data
+
+
+# Print the menu
+###############################################
+def print_menu(refreshrate):
+
+    print("##########")
+    print("##########")
+
+    if refreshrate == 0:
+        print("input enter key to refresh OR input integer to plot last N points")
+
+    else:
+        print("input 'pause' to pause OR input integer to plot last N points")
+
+    print("input 'all' or '0' to plot all data")
+    print("input 'quit' to close")
+    print("##########")
+    print("##########")
+    return
+
+
+# Handle inputs from the terminal
+###############################################
+def input_func(timer, lpcount):
+    global runloop, callon, Ntail, paused
+    input_string = input()
+
+    if input_string == "all":
+        Ntail = 0
+    elif input_string == "quit":
+        runloop = False
+        print("Complete!")
+    elif input_string == "pause":
+        paused = True
+        print("Plotting paused. Enter 'resume' to continue.")
+    elif input_string == "resume":
+        paused = False
+    elif not input_string == "":
+        try:
+            Ntail = int(input_string)
+            if Ntail < 0:
+                Ntail = abs(Ntail)
+
+            if Ntail == 8675309:
+                Ntail = 0
+                for i in range(0,100):
+                    print("Jenny, I've got your number!")
+
+            print("Loading the last {0} points...".format(Ntail))
+        except ValueError:
+            print("Input not recognized. Try again.")
+
+    if callon:
+        timers[loopcount].stop()
+        callon = False
+
+
 # Main Program
+###############################################
 if __name__ == '__main__':
+    # Set up argument parser
     def_dir = op.join(op.expanduser("~"), "LabJackDAQ", "data")
     def_filenamex = ""
     parser, args = get_args()
+    refrate = args.refrate
 
+    # File handling stuff
     if args.title == "":
         lof = glob.glob(op.join(args.dir, "*.csv"))
         if len(lof) > 0:
@@ -44,52 +144,29 @@ if __name__ == '__main__':
     else:
         print("Loading: {0}".format(filenamex))
 
-    Ntail = 0
-    fig = plt.figure()
-    plt.interactive(False)
-
+    # Init some variables and start plotting.
+    fig = plt.figure(1)
+    plt.show(block=False)
     runloop = True
+    paused = False
+    callon = False
+    loopcount = 0
+    timers = []
     while runloop:
-
-        # Data will be format: rows = samples, columns = channels
-        # d = np.genfromtxt('./20180116_RPS_monitor_2.csv',delimiter=',', skip_header=1)
-        d = np.genfromtxt(filenamex, delimiter=',', names=True)
-        fig.clf()
-        dnames = d.dtype.names
-        t = dnames[0]
-        tn = d[t]
-        plen = len(dnames) - 2
-        for i in range(1, plen + 1):
-            dn = d[dnames[i]]
-            plt.subplot(plen, 1, i)
-
-            if Ntail == 0:
-                plt.plot(tn, dn)
+        if not paused:
+            # I can't figure out an easy way to remove a timer from a canvas. The current workaround is to stop the old
+            # timer and create a new timer so multiple instances of do_plots don't start running.
+            timers.append(fig.canvas.new_timer(interval=int(refrate * 1000)))
+            if refrate > 0:
+                timers[loopcount].add_callback(do_plots, filenamex, Ntail, fig)
+                callon = True
+                timers[loopcount].start()
 
             else:
-                plt.plot(tn[-Ntail:], dn[-Ntail:])
-
-            plt.title(dnames[i])
-            plt.grid()
-
-        plt.xlabel('Time (s)')
-        plt.subplots_adjust(hspace=1.2)
-        plt.show(block=False)
-
-        print("hit 'enter' to refresh or integer N for last N points")
-        print("Enter 'quit' to exit")
-        time.sleep(1)
-        input_string = input()
-
-        if len(input_string) == 0:
-            Ntail = 0
-        elif input_string=="quit":
-            runloop = False
-            print("Complete!")
+                do_plots(filenamex, Ntail, fig)
+            print_menu(refrate)
+            addto = 1
         else:
-            try:
-                Ntail = int(input_string)
-                print("Loading the last {0} points...".format(Ntail))
-            except KeyboardInterrupt:
-                exit()
-
+            addto = 0
+        input_func(timers, loopcount)
+        loopcount += addto
