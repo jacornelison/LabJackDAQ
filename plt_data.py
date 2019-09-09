@@ -36,9 +36,12 @@ def do_plots(filename, ntail, figure):
     axes = fig.subplots(plen, 1, squeeze=False)
 
     for i in range(1, plen+1):
-
         dn = data[dnames[i]]
-        ax = axes[i-1]
+        if plen==1:
+            ax = axes
+        else:
+            ax = axes[i-1]
+
         if ntail == 0:
             ax.plot(tn, dn)
         else:
