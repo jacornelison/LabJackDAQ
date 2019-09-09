@@ -33,7 +33,7 @@ def do_plots(filename, ntail, figure):
     tn -= tn[0]
     plen = len(dnames) - 2
     fig.clf()
-    axes = fig.subplots(plen, 1, squeeze=False)
+    axes = fig.subplots(plen, 1)
 
     for i in range(1, plen+1):
         dn = data[dnames[i]]
@@ -41,7 +41,6 @@ def do_plots(filename, ntail, figure):
             ax = axes
         else:
             ax = axes[i-1]
-
         if ntail == 0:
             ax.plot(tn, dn)
         else:
