@@ -33,7 +33,7 @@ def do_plots(filename, ntail, figure):
     tn -= tn[0]
     plen = len(dnames) - 2
     fig.clf()
-    axes = fig.subplots(plen, 1)
+    axes = fig.subplots(plen, 1, squeeze=False)
 
     for i in range(1, plen+1):
 
