@@ -41,7 +41,6 @@ def do_plots(filename, ntail, figure):
             ax = axes
         else:
             ax = axes[i-1]
-
         if ntail == 0:
             ax.plot(tn, dn)
         else:

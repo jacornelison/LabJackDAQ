@@ -171,7 +171,7 @@ def get_args():
 def print_menu():
     print("##########")
     print("##########")
-    print("input enter key to take data point OR input integer for multiple points")
+    print("input enter key to take a single data point")
     print("input 'auto' to continuously log data")
     print("input 'stop' to stop taking data and close recorder")
     print("##########")
@@ -253,18 +253,19 @@ if __name__ == '__main__':
         if input_string == 'stop':
             runprog = False
 
-        # check for multi-measurement request
-        try:
-            burst = int(input_string)
-            while (burst > 0):
-                fs = get_data(args.ch, dmmtype)
-                print(fs)
-                burst = burst - 1
-        except ValueError:
-            pass
+        # # check for multi-measurement request
+        # try:
+        #     burst = int(input_string)
+        #     while (burst > 0):
+        #         fs = get_data(args.ch, dmmtype)
+        #         print(fs)
+        #         burst = burst - 1
+        # except ValueError:
+        #     pass
 
         # check for auto-measurement request
         if input_string == 'auto':
+            thstat = True
             print("Starting data aquisition...\n")
             print("Enter pause to temporarily stop DAQ or enter stop to close program.")
             # Initialize DAQ loop
