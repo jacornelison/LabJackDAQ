@@ -34,6 +34,7 @@ def auto_daq(ch,dmmtype):
 ###############################################
 def get_data(ch, dmmtype):
     # If loop runs faster than the sample rate, average until enough time elapses
+    global dmm
     volt = np.zeros(len(ch.split(',')))
     samp_el = 0
     count = 0
@@ -110,10 +111,28 @@ def get_field_names(ch, inc):
 # Get values from the dmm
 ###############################################
 def read_volts(ch, dmmtype):
+    global dmm
     v = []
     if dmmtype == "u6":
-        for i in range(0, int(ch)):
-            v.append(dmm.getAIN(i))
+        if diff:
+            di = 2
+            iend = int(ch)*2
+        else:
+            di = 1
+            iend = int(ch)
+
+        for i in range(0, iend,di):
+            try:
+                v.append(dmm.getAIN(i,differential=diff))
+            except:
+                print("Got zero packet")
+                dmm.close()
+                time.sleep(0.5)
+                dmm = u6.U6()
+                dmm.getCalibrationData()
+                #v.append(dmm.getAIN(i,differential=diff))
+                v.append(np.nan)
+
     elif dmmtype == "agil":
         v = float(dmm.ask(":MEAS:VOLT:DC?"))
     elif dmmtype == "test":
@@ -163,7 +182,8 @@ def get_args():
                         type=float)
     parser.add_argument("--ow", help="Overwrite input file. (Normally off)",
                         default=False, action="store_true")
-
+    parser.add_argument("--diff", help="Take Differential readings. Pos input on even channels, negative on input channel+1 (Normally off)",
+                        default=False, action="store_true")
     return parser, parser.parse_args()
 
 
@@ -191,7 +211,7 @@ if __name__ == '__main__':
 
     sr = args.sr
     inc = args.inc
-
+    diff = args.diff
     # Initialize DAQ
     # Prioritize test option, then Agilent DMM, and lastly the LabJack.
     if args.test:

@@ -10,7 +10,7 @@ import glob
 # Global Variables
 runloop = True
 Ntail = 0
-
+pm = False
 
 # Options for the arg-parser
 ###############################################
@@ -20,6 +20,7 @@ def get_args():
     parser.add_argument("--dir", help="dir in filename", default=def_dir)
     parser.add_argument("--refrate", help="Set refresh rate in seconds. Default = manual", default=0,
                         type=float)
+    parser.add_argument("--pm", help="Dual-channel reading. I.e. Ch0=V+, Ch1=V-, plots V+ + V-  (Normally off)", default=False, action="store_true")
     return parser, parser.parse_args()
 
 
@@ -31,16 +32,30 @@ def do_plots(filename, ntail, figure):
     t = dnames[0]
     tn = data[t]
     tn -= tn[0]
-    plen = len(dnames) - 2
+    plen = (len(dnames)-2)
+    if pm & (plen%2==0):
+        inc=2
+        plen = int((len(dnames) - 2)/inc)
+    elif pm:
+        print("Channel Mismatch. Ensure you have an even number of channels")
+        exit()
+    else:
+        inc=1
+    
     fig.clf()
     axes = fig.subplots(plen, 1)
 
-    for i in range(1, plen+1):
-        dn = data[dnames[i]]
+    cnt = 0
+    for i in range(1, plen+inc,inc):
+        if pm:        
+            dn = data[dnames[i]]-data[dnames[i+1]]
+        else:
+            dn = data[dnames[i]]
         if plen==1:
             ax = axes
         else:
-            ax = axes[i-1]
+            ax = axes[cnt]
+            cnt+=1
         if ntail == 0:
             ax.plot(tn, dn)
         else:
@@ -126,7 +141,7 @@ if __name__ == '__main__':
     def_filenamex = ""
     parser, args = get_args()
     refrate = args.refrate
-
+    pm = args.pm
     # File handling stuff
     if args.title == "":
         lof = glob.glob(op.join(args.dir, "*.csv"))
