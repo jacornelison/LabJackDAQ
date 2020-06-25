@@ -23,10 +23,11 @@ thstat = True
 
 # Wrapper function for threading.
 ###############################################
-def auto_daq(ch,dmmtype):
+def auto_daq(ch,dmmtype,csvfile):
     global thstat
     while thstat:
-        get_data(ch,dmmtype)
+        el_time, v, inc_angle, avging = get_data(ch,dmmtype)
+        fstring = write_data(csvfile, el_time, v, inc_angle, avging)
     return
 
 
@@ -34,7 +35,7 @@ def auto_daq(ch,dmmtype):
 ###############################################
 def get_data(ch, dmmtype):
     # If loop runs faster than the sample rate, average until enough time elapses
-    global dmm
+    global dmm, data_array
     volt = np.zeros(len(ch.split(',')))
     samp_el = 0
     count = 0
@@ -49,7 +50,6 @@ def get_data(ch, dmmtype):
     v = volt / count
     v = v.tolist()
     el_time = time.time()
-    time_data = el_time
 
     if avg:
         avging = 1
@@ -65,19 +65,12 @@ def get_data(ch, dmmtype):
         angle_str = angle_str.split()
         inc_angle = findangle(angle_str)
 
-    # plot voltage vs Time
-    z = [el_time]
-    for i in range(0, len(ch.split(','))):
-        z.append(v[i])
-
-    fstring = write_data(filenamex, el_time, v, inc_angle, avging)
-
-    return fstring
+    return el_time, v, inc_angle, avging
 
 
 # Convert numbers into a comma-separated line and append it to our csv file
 ###############################################
-def write_data(filename, time, volts, angle, avging):
+def write_data(csvfile, time, volts, angle, avging):
     fs = "{0}".format(time) # Filestring
 
     # If Inclinometer is on, put that first.
@@ -90,9 +83,10 @@ def write_data(filename, time, volts, angle, avging):
     fs = fs + ",{0}".format(avging)
 
     # save data in text and csv format
-    with open(filename, 'a') as csvfile:
-        csvfile.writelines(fs)
-        csvfile.write("\n")
+
+    csvfile.writelines(fs)
+    csvfile.write("\n")
+    csvfile.flush()
     return fs
 
 # Determine the field names that go into the csv
@@ -243,9 +237,14 @@ if __name__ == '__main__':
     # Open csvfile
     with open(filenamex, 'w') as csvfile:
         fieldnames = get_field_names(args.ch, inc)
+
         csvfile.writelines(fieldnames)
         csvfile.write("\n")
+        csvfile.flush()
+        csvfile.close()
         print("Writing data to file: {0}".format(filenamex))
+
+    csvfile = open(filenamex,'a')
 
     # Initialize inclinometer if wanted
     if inc:
@@ -289,7 +288,7 @@ if __name__ == '__main__':
             print("Starting data aquisition...\n")
             print("Enter pause to temporarily stop DAQ or enter stop to close program.")
             # Initialize DAQ loop
-            daqthread = Thread(target=auto_daq, args=(args.ch, dmmtype,))
+            daqthread = Thread(target=auto_daq, args=(args.ch, dmmtype, csvfile,))
             daqthread.start()
 
             cmd = input()
