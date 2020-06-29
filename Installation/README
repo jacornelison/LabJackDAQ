@@ -8,9 +8,12 @@ Download and extract labjack exodriver
 cd labjack-exodriver-572cb7b/
 sudo bash install.sh
 
+sudo apt-get install python3
+sudo apt-get install python3-pip
+
 Download and extract LabJackPython
 cd LabJackPython-5-26-2015/
-sudo python setup.py install
+python setup.py install
 
 sudo apt-get install ipython # for testing
 

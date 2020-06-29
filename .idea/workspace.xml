@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5719f389-6fce-4a31-8556-8475198be224" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/plt_data_v2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LabJack_DAQ.py" beforeDir="false" afterPath="$PROJECT_DIR$/LabJack_DAQ.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/README" beforeDir="false" afterPath="$PROJECT_DIR$/Installation/README" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +34,8 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -221,6 +226,7 @@
       <workItem from="1592943563378" duration="6203000" />
       <workItem from="1593020411403" duration="29677000" />
       <workItem from="1593055611993" duration="25538000" />
+      <workItem from="1593182912673" duration="3630000" />
     </task>
     <servers />
   </component>
@@ -278,11 +284,11 @@
     <state x="2381" y="164" key="SettingsEditor/3923.16.1597.1050/66.0.1470.864/1920.0.1920.1040@1920.0.1920.1040" timestamp="1592944215189" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/LabJackDAQ$plt_data_v2.coverage" NAME="plt_data_v2 Coverage Results" MODIFIED="1593108102580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/LabJackDAQ$plt_data.coverage" NAME="plt_data Coverage Results" MODIFIED="1592943809024" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/LabJackDAQ$LabJackDAQ.coverage" NAME="LabJackDAQ Coverage Results" MODIFIED="1593063328620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/LabJackDAQ$LabJack_DAQ.coverage" NAME="LabJack_DAQ Coverage Results" MODIFIED="1593108091497" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/LabJackDAQ$test.coverage" NAME="test Coverage Results" MODIFIED="1593063785326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/LabJackDAQ$plt_data_v2.coverage" NAME="plt_data_v2 Coverage Results" MODIFIED="1593108102580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/LabJackDAQ$LabJack_DAQ_v2.coverage" NAME="LabJack_DAQ_v2 Coverage Results" MODIFIED="1593124860381" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/LabJackDAQ$LabJackDAQ.coverage" NAME="LabJackDAQ Coverage Results" MODIFIED="1593063328620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/LabJackDAQ$plt_data.coverage" NAME="plt_data Coverage Results" MODIFIED="1592943809024" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/LabJackDAQ$test.coverage" NAME="test Coverage Results" MODIFIED="1593063785326" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
