@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5719f389-6fce-4a31-8556-8475198be224" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/LabJackDAQ.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Installation/install_ljb.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LabJack_DAQ.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LabJack_DAQ_v2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plt_data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plt_data_v2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,7 +124,7 @@
       <workItem from="1593020411403" duration="29677000" />
       <workItem from="1593055611993" duration="25538000" />
       <workItem from="1593182912673" duration="3630000" />
-      <workItem from="1593462001959" duration="3013000" />
+      <workItem from="1593462001959" duration="4496000" />
     </task>
     <servers />
   </component>
