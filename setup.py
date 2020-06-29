@@ -1,9 +1,9 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='LabJackDAQ',
     version='0.1dev',
-    packages=['usbtmc',
+    install_requires=['usbtmc',
               'time',
               'datetime',
               'serial',
@@ -13,9 +13,9 @@ setup(
               'sys',
               'pandas',
               'pyqtgraph',
-              'pyqt5==10',
-
+              'pyqt5==5.10',
               ],
     license='',
     long_description=open('README.txt').read(),
 )
+

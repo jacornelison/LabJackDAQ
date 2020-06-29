@@ -345,8 +345,6 @@ class MainWindow(QtGui.QMainWindow):
         # msg.buttonClicked.connect(msgbtn)
 
         retval = msg.exec_()
-        print
-        "value of pressed message box button:", retval
 
         event.ignore()
 
