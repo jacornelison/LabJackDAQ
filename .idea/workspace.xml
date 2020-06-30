@@ -2,8 +2,91 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5719f389-6fce-4a31-8556-8475198be224" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Installation/install_ljb.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/ChangeLog.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/1-Wire/1-wire.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/1-Wire/Read_DS1822.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/EI1050/ei1050.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/EI1050/ei1050SampleApp.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/LJTickDAC/LJTickDAC.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/PWM-looping.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/ktypeExample.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/ljTickDacSimple.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/outputSinDac.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/outputSinDacUnix.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/spi_sca3000.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/streamTest-threading.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/streamTest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/u3Noise.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/u3allio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/u6Noise.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/u6allio.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/ue9IPAddressFilter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/Examples/workingWithModbus.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/setup.cfg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/LabJackPython.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/Modbus.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/u12.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/u3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/u6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/LabJackPython-2.0.0/src/ue9.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/90-labjack.rules" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/INSTALL.Linux" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/INSTALL.MacOSX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/modbus.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/modbus.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/readModbusExample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/testModbusFunctions.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/Modbus/writeModbusExample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U12/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U12/u12AISample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3BasicConfigU3.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3EFunctions.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3Feedback.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3LJTDAC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3Stream.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U3/u3allio.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6BasicConfigU6.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6ConfigU6.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6EFunctions.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6Feedback.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6LJTDAC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6Stream.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/U6/u6allio.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9BasicCommConfig.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9ControlConfig.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9EFunctions.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9EthernetExample.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9Feedback.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9LJTDAC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9SingleIO.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9Stream.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9TimerCounter.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/examples/UE9/ue9allio.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/install.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/liblabjackusb/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/liblabjackusb/add_ldconfig_path.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/liblabjackusb/labjackusb.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/exodriver-master/liblabjackusb/labjackusb.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Installation/install_ljb.sh" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +207,7 @@
       <workItem from="1593020411403" duration="29677000" />
       <workItem from="1593055611993" duration="25538000" />
       <workItem from="1593182912673" duration="3630000" />
-      <workItem from="1593462001959" duration="4496000" />
+      <workItem from="1593462001959" duration="7932000" />
     </task>
     <servers />
   </component>
@@ -157,6 +240,10 @@
     </state>
     <state x="3840" y="490" key="#com.intellij.execution.impl.EditConfigurationsDialog/66.0.1470.864/1920.33.1920.1160/3840.16.1050.1640@3840.16.1050.1640" timestamp="1593464416345" />
     <state x="3840" y="490" key="#com.intellij.execution.impl.EditConfigurationsDialog/66.0.1470.864/3840.16.1050.1640/1920.33.1920.1160@3840.16.1050.1640" timestamp="1593124404401" />
+    <state x="4124" y="637" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1593480213741">
+      <screen x="3840" y="16" width="1050" height="1640" />
+    </state>
+    <state x="4124" y="637" key="#com.intellij.fileTypes.FileTypeChooser/66.0.1470.864/1920.33.1920.1160/3840.16.1050.1640@3840.16.1050.1640" timestamp="1593480213741" />
     <state width="1007" height="477" key="GridCell.Tab.0.bottom" timestamp="1593464385598">
       <screen x="3840" y="16" width="1050" height="1640" />
     </state>

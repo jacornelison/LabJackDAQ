@@ -45,5 +45,13 @@ go cd ..
 printf "\n\n\nSetting up LabJackDAQ...\n\n\n"
 go git clone git://github.com/jacornelison/LabJackDAQ.git
 go cd LabJackDAQ
-go git checkout plotting_overhaul
 go python3 -m pip install --user .
+
+# Make aliases for python
+LJ_ALIAS="alias ljdaq='python3 $PWD/LabJackDAQ.py"
+
+if ! grep -q "$LJ_ALIAS" ~/.bashrc; then
+  echo $LJ_ALIAS >> ~/.bashrc
+  source ~/.bashrc
+fi
+
