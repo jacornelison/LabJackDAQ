@@ -33,6 +33,7 @@ go git clone git://github.com/labjack/exodriver.git
 go cd exodriver/
 go ./install.sh
 go cd ..
+go rm -rf exodriver
 
 # Get labjackpython
 printf "\n\n\nInstalling labjackpython...\n\n\n"
@@ -40,6 +41,7 @@ go git clone git://github.com/labjack/LabJackPython.git
 go cd LabJackPython/
 go python3 -m pip install --user .
 go cd ..
+go rm -rf LabJackPython
 
 # Now setup LabJackDAQ
 printf "\n\n\nSetting up LabJackDAQ...\n\n\n"
