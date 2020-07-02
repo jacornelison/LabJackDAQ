@@ -11,7 +11,7 @@ go ()
 	fi
 }
 
-if [ "$OSTYPE" -ne "linux-gnu" ]; then
+if [ "$OSTYPE" != "linux-gnu" ]; then
     echo "Operating System: $OSTYPE detected."
     echo "This installation only works on Linux machines right now."
 fi
@@ -45,12 +45,30 @@ go rm -rf LabJackPython
 
 # Now setup LabJackDAQ
 printf "\n\n\nSetting up LabJackDAQ...\n\n\n"
-go git clone git://github.com/jacornelison/LabJackDAQ.git
+
+# If we're in the labjack directory, go ahead and leave.
+if [ ${PWD##*/} == "LabJackDAQ" ]
+then
+  go cd ..
+fi
+
+# clone or update the labjack daq directory.
+if [ ! -d "LabJackDAQ" ]
+then
+	go git clone git://github.com/jacornelison/LabJackDAQ.git
+else
+	echo "Appears that LabJackDAQ is already installed"
+	echo "Updating directory instead"
+	go cd LabJackDAQ
+	go git pull
+	go cd ..
+fi
+
 go cd LabJackDAQ
-go python3 -m pip install --user .
+go python3 -m pip install -r requirements.txt
 
 # Make aliases for python
-LJ_ALIAS="alias ljdaq='python3 $PWD/LabJackDAQ.py"
+LJ_ALIAS="alias ljdaq='python3 $PWD/LabJackDAQ.py'"
 
 if ! grep -q "$LJ_ALIAS" ~/.bashrc; then
   echo $LJ_ALIAS >> ~/.bashrc

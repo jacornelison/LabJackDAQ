@@ -1,0 +1,7 @@
+numpy==1.18.5
+pandas==0.24.2
+PyQt5==5.10
+pyqtgraph==0.11.0
+python-usbtmc==0.8
+pyusb==1.0.2
+serial==0.0.97

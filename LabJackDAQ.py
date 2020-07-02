@@ -29,9 +29,9 @@ from pyqtgraph.parametertree import Parameter, ParameterTree
 
 global filenamex, pltlist
 global area, params, ptree, timer
-global args
+global args, dstarttime
 
-
+dstarttime = time.time()
 # Subfunction for data recording and logging.
 ###############################################
 def get_data():
@@ -42,7 +42,7 @@ def get_data():
     samp_el = 0
     count = 0
     tstart = time.time()
-    while samp_el < 1 / sr:
+    while samp_el < 1 / args.samprate:
         v = read_volts(len(args.ch.split(',')), dmmtype)
         volt = volt + np.array(v)
         # rt = datetime.datetime.now() - time_start
@@ -164,7 +164,9 @@ def get_args():
                         default="AIN0")
     parser.add_argument("--inc", help="Toggle acquisition from digital inclinometer (normally off)", default=False,
                         action="store_true")
-    parser.add_argument("--sr", help="Set sample rate in samps / sec (only when not plotting) Default = 50", default=50.0,
+    parser.add_argument("--samprate", help="Set sample rate in milliseconds", default=50.0,
+                        type=float)
+    parser.add_argument("--refreshrate", help="Set plot refresh rate in milliseconds Default = 50", default=1000.0,
                         type=float)
     parser.add_argument("--ow", help="Overwrite input file. (Normally off)",
                         default=False, action="store_true")
@@ -176,21 +178,10 @@ def get_args():
 
 ###############################################
 # GUI STUFF
-def update():
+def plot_update():
     global daq_data
     for plt in pltlist:
         plt.update(daq_data)
-
-
-def daq_toggle(param, value):
-    global daq_timer
-    timer_control(daq_timer, value, 1 / args.sr)
-
-
-def plot_toggle(param, value):
-    global plot_timer
-    timer_control(plot_timer, value, 50)
-
 
 def contrast_toggle(param, value):
     global pltlist, params
@@ -209,24 +200,22 @@ def contrast_toggle(param, value):
             plt.w.showGrid(x=True, y=True)
 
 
-def autosave_toggle(param, value):
-    global save_timer, params
-    timer_control(save_timer,
-                  value,
-                  params['DAQ Options', 'AutoSave Options', 'Save Interval (Min)'] * 60 * 1000)
+def timer_control(param,paramval):
+    # Blindly controls timers based on state and rate
+    global timer_dict
+    parent = param.parent()
+    timerobj = timer_dict[parent.name()]
+    timerstate = parent.child("state").value()
+    timerrate = parent.child("rate").value()
 
+    if not timerstate and timerobj.isActive():
+        timerobj.stop()
 
-def set_autosave(param, value):
-    global save_timer, params
-    if params['DAQ Options', 'AutoSave Options', 'AutoSave']:
-        save_timer.setInterval(value * 60 * 1000)
+    if timerstate and not timerobj.isActive():
+        timerobj.start(timerrate)
 
-
-def timer_control(param, value, sr):
-    if not value:
-        param.stop()
-    elif not param.isActive():
-        param.start(sr)
+    if timerobj.interval() != timerrate:
+        timerobj.setInterval(timerrate)
 
 
 def save_csv():
@@ -245,41 +234,48 @@ def make_options():
 
     ## DAQ Options
     params.addChild(
-        {'name': "DAQ Options",
+        {'name': "daq",
+         'title': "DAQ Options",
          'type': 'group',
          'children': [
-             {'name': 'AutoDAQ', 'type': 'bool', 'value': True},
+             {'name': 'state', 'title':'AutoDAQ', 'type': 'bool', 'value': True},
+             {'name': 'rate', 'title': 'Refresh Rate (ms)', 'type': 'float', 'value': args.samprate},
              {'name': 'Get Datapoint', 'type': 'action'},
              {'name': 'Save Location', 'type': 'text', 'value': filenamex},
-             {'name': 'Save', 'type': 'action'},
-             {'name': 'AutoSave Options', 'type': 'group', 'children': [
-                 {'name': 'AutoSave', 'type': 'bool', 'value': True},
-                 {'name': 'Save Interval (Min)', 'type': 'float', 'value': '10'}
+             {'name': 'savebtn', 'title':'Save', 'type': 'action'},
+             {'name': 'save','title': 'AutoSave Options', 'type': 'group', 'children': [
+                 {'name': 'state','title': 'AutoSave', 'type': 'bool', 'value': True},
+                 {'name': 'rate', 'title': 'Save Interval (ms)', 'type': 'float', 'value': 10*60*1000}
              ]},
          ]
          }
     )
 
-    params.param('DAQ Options', 'Get Datapoint').sigActivated.connect(get_data)
-    params.param('DAQ Options', 'AutoDAQ').sigValueChanged.connect(daq_toggle)
-    params.param('DAQ Options', 'Save Location').sigValueChanged.connect(change_file)
-    params.param('DAQ Options', 'Save').sigActivated.connect(save_csv)
-    params.param('DAQ Options', 'AutoSave Options', 'Save Interval (Min)').sigValueChanged.connect(set_autosave)
-    params.param('DAQ Options', 'AutoSave Options', 'AutoSave').sigValueChanged.connect(autosave_toggle)
+    params.param('daq', 'Get Datapoint').sigActivated.connect(get_data)
+    params.param('daq', 'Save Location').sigValueChanged.connect(change_file)
+    params.param('daq', 'state').sigValueChanged.connect(timer_control)
+    params.param('daq', 'rate').sigValueChanged.connect(timer_control)
+
+    params.param('daq', 'savebtn').sigActivated.connect(save_csv)
+    params.param('daq', 'save', 'state').sigValueChanged.connect(timer_control)
+    params.param('daq', 'save', 'rate').sigValueChanged.connect(timer_control)
     ## Plot Options
     params.addChild(
-        {'name': "Plot Options",
+        {'name': 'plot',
+         'title': 'Plot Options',
          'type': 'group',
          'children': [
-             {'name': 'AutoUpdate', 'type': 'bool', 'value': True},
+             {'name': 'state','title': 'AutoUpdate', 'type': 'bool', 'value': True},
+             {'name': 'rate','title': 'Refresh Rate (ms)','type':'float','value': args.refreshrate},
              {'name': 'Update', 'type': 'action'},
              {'name': 'High Contrast Mode', 'type': 'bool', 'value': True},
          ]
          })
 
-    params.param('Plot Options', 'Update').sigActivated.connect(update)
-    params.param('Plot Options', 'AutoUpdate').sigValueChanged.connect(plot_toggle)
-    params.param('Plot Options', 'High Contrast Mode').sigValueChanged.connect(contrast_toggle)
+    params.param('plot', 'Update').sigActivated.connect(plot_update)
+    params.param('plot', 'state').sigValueChanged.connect(timer_control)
+    params.param('plot', 'rate').sigValueChanged.connect(timer_control)
+    params.param('plot', 'High Contrast Mode').sigValueChanged.connect(contrast_toggle)
     return params
 
 
@@ -301,7 +297,7 @@ class Plotter():
             {'name': 'Color', 'type': 'color', 'value': "0CC", 'tip': "This is a color button"},
             {'name': 'Scrolling', 'type': 'group', 'expanded': False, 'children': [
                 {'name': 'Scrolling', 'type': 'bool', 'value': False},
-                {'name': 'Range (samples)', 'type': 'int', 'value': 300},
+                {'name': 'Range (seconds)', 'type': 'int', 'value': 300},
             ]}
 
         ])
@@ -315,10 +311,12 @@ class Plotter():
         self.curve.setPen(self.params['Color'].getRgb())
 
         if self.params['Scrolling', 'Scrolling']:
-            N = self.params['Scrolling', 'Range (samples)']
-            self.curve.setData(data[data.keys().to_list()[0]].iloc[-N:].values, data[self.name].iloc[-N:].values)
+            N = self.params['Scrolling', 'Range (seconds)']
+            t = data[data.keys().to_list()[0]].values-dstarttime
+            ind = (t >= (t[-1]-N))
+            self.curve.setData(data[data.keys().to_list()[0]].iloc[ind].values-dstarttime, data[self.name].iloc[ind].values)
         else:
-            self.curve.setData(data[data.keys().to_list()[0]], data[self.name])
+            self.curve.setData(data[data.keys().to_list()[0]]-dstarttime, data[self.name])
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -355,6 +353,7 @@ class MainWindow(QtGui.QMainWindow):
 
 ## Make the app
 app = QtGui.QApplication([])
+app.setAttribute(QtCore.Qt.AA_Use96Dpi)
 win = MainWindow()
 area = DockArea()
 win.setCentralWidget(area)
@@ -372,17 +371,6 @@ param_dock.addWidget(ptree)
 
 win.show()
 
-plot_timer = pg.QtCore.QTimer()
-plot_timer.timeout.connect(update)
-plot_timer.start(50)
-
-daq_timer = pg.QtCore.QTimer()
-daq_timer.timeout.connect(get_data)
-daq_timer.start(1)
-
-save_timer = pg.QtCore.QTimer()
-save_timer.timeout.connect(save_csv)
-save_timer.start(10 * 60 * 1000)
 ###############################################
 # Main function
 if __name__ == '__main__':
@@ -393,7 +381,6 @@ if __name__ == '__main__':
     def_filenamex = "labjack_generic_daq.csv".format(def_dir, datetime.datetime.now())
     parser, args = get_args()
 
-    sr = args.sr
     inc = args.inc
     diff = args.diff
     # Initialize DAQ
@@ -437,6 +424,7 @@ if __name__ == '__main__':
     fields = get_field_names(args.ch, inc, commas=False)
     daq_data = pd.DataFrame(columns=fields)
 
+
     params = make_options()
 
     # Set up the plots automatically
@@ -447,6 +435,24 @@ if __name__ == '__main__':
     for p in pltlist[0:-1]:
         area.moveDock(p.d, "top", pltlist[-1].d)
 
+    # Set up the timers
+    plot_timer = pg.QtCore.QTimer()
+    plot_timer.timeout.connect(plot_update)
+    plot_timer.start(args.refreshrate)
+
+    daq_timer = pg.QtCore.QTimer()
+    daq_timer.timeout.connect(get_data)
+    daq_timer.start(args.samprate)
+
+    save_timer = pg.QtCore.QTimer()
+    save_timer.timeout.connect(save_csv)
+    save_timer.start(10 * 60 * 1000)
+
+    timer_dict = {
+        "daq": daq_timer,
+        "plot": plot_timer,
+        "save": save_timer,
+    }
     # Initialize inclinometer if wanted
     if inc:
         ser = serial.Serial("/dev/ttyUSB0", baudrate=9600);
