@@ -32,6 +32,8 @@ global area, params, ptree, timer
 global args, dstarttime
 
 dstarttime = time.time()
+
+
 # Subfunction for data recording and logging.
 ###############################################
 def get_data():
@@ -73,8 +75,6 @@ def get_data():
     daq_data = daq_data.append(pd.DataFrame([data_row],
                                             columns=daq_data.keys().to_list()),
                                ignore_index=True)
-
-    # return el_time, v, inc_angle, avging
 
 
 # Determine the field names that go into the csv
@@ -151,7 +151,6 @@ def findangle(angle_str):
 ###############################################
 def get_args():
     parser = argparse.ArgumentParser(description='Logs and plots timestream of data with various options')
-    parser.add_argument("--temp", nargs=2, default=(0, 0), help="Hot/cold load power value (NOT WORKING)", type=float)
     parser.add_argument("--title", help="Change the default filename. def = {0}".format(def_filenamex),
                         default=def_filenamex)
     parser.add_argument("--dmm", help="Utilize Agilent DMM instead of U6 for DAQ, only 1 channel. (Normally off)",
@@ -178,11 +177,15 @@ def get_args():
 
 ###############################################
 # GUI STUFF
+
+# Update the plots with new data
 def plot_update():
     global daq_data
     for plt in pltlist:
         plt.update(daq_data)
 
+
+# Toggle high-contrast mode for outdoor use.
 def contrast_toggle(param, value):
     global pltlist, params
     if value:
@@ -200,8 +203,8 @@ def contrast_toggle(param, value):
             plt.w.showGrid(x=True, y=True)
 
 
-def timer_control(param,paramval):
-    # Blindly controls timers based on state and rate
+# Blindly controls timers based on state and rate
+def timer_control(param, paramval):
     global timer_dict
     parent = param.parent()
     timerobj = timer_dict[parent.name()]
@@ -218,16 +221,20 @@ def timer_control(param,paramval):
         timerobj.setInterval(timerrate)
 
 
+# Save the data to a csv file.
 def save_csv():
     global filenamex, daq_data
     daq_data.to_csv(filenamex)
 
 
+# Change the file to be saved to.
 def change_file(param, value):
     global filenamex
     filenamex = value
 
 
+# Populates the parameter tree with all of the DAQ and plotting options.
+# Options specific to the plots (color, scrolling, etc...) are created in the plotter class.
 def make_options():
     global filenamex
     params = Parameter.create(name='params', type='group', children=[])
@@ -238,14 +245,14 @@ def make_options():
          'title': "DAQ Options",
          'type': 'group',
          'children': [
-             {'name': 'state', 'title':'AutoDAQ', 'type': 'bool', 'value': True},
+             {'name': 'state', 'title': 'AutoDAQ', 'type': 'bool', 'value': True},
              {'name': 'rate', 'title': 'Refresh Rate (ms)', 'type': 'float', 'value': args.samprate},
              {'name': 'Get Datapoint', 'type': 'action'},
              {'name': 'Save Location', 'type': 'text', 'value': filenamex},
-             {'name': 'savebtn', 'title':'Save', 'type': 'action'},
-             {'name': 'save','title': 'AutoSave Options', 'type': 'group', 'children': [
-                 {'name': 'state','title': 'AutoSave', 'type': 'bool', 'value': True},
-                 {'name': 'rate', 'title': 'Save Interval (ms)', 'type': 'float', 'value': 10*60*1000}
+             {'name': 'savebtn', 'title': 'Save', 'type': 'action'},
+             {'name': 'save', 'title': 'AutoSave Options', 'type': 'group', 'children': [
+                 {'name': 'state', 'title': 'AutoSave', 'type': 'bool', 'value': True},
+                 {'name': 'rate', 'title': 'Save Interval (ms)', 'type': 'float', 'value': 10 * 60 * 1000}
              ]},
          ]
          }
@@ -265,8 +272,8 @@ def make_options():
          'title': 'Plot Options',
          'type': 'group',
          'children': [
-             {'name': 'state','title': 'AutoUpdate', 'type': 'bool', 'value': True},
-             {'name': 'rate','title': 'Refresh Rate (ms)','type':'float','value': args.refreshrate},
+             {'name': 'state', 'title': 'AutoUpdate', 'type': 'bool', 'value': True},
+             {'name': 'rate', 'title': 'Refresh Rate (ms)', 'type': 'float', 'value': args.refreshrate},
              {'name': 'Update', 'type': 'action'},
              {'name': 'High Contrast Mode', 'type': 'bool', 'value': True},
          ]
@@ -279,7 +286,7 @@ def make_options():
     return params
 
 
-# Make a plotter class
+# Make a plotter class that handles all of the plotting of a specific channel.
 class Plotter():
     def __init__(self, chname):
         global area, params, ptree
@@ -312,13 +319,15 @@ class Plotter():
 
         if self.params['Scrolling', 'Scrolling']:
             N = self.params['Scrolling', 'Range (seconds)']
-            t = data[data.keys().to_list()[0]].values-dstarttime
-            ind = (t >= (t[-1]-N))
-            self.curve.setData(data[data.keys().to_list()[0]].iloc[ind].values-dstarttime, data[self.name].iloc[ind].values)
+            t = data[data.keys().to_list()[0]].values - dstarttime
+            ind = (t >= (t[-1] - N))
+            self.curve.setData(data[data.keys().to_list()[0]].iloc[ind].values - dstarttime,
+                               data[self.name].iloc[ind].values)
         else:
-            self.curve.setData(data[data.keys().to_list()[0]]-dstarttime, data[self.name])
+            self.curve.setData(data[data.keys().to_list()[0]] - dstarttime, data[self.name])
 
 
+# Class that controls the main window GUI
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -351,7 +360,7 @@ class MainWindow(QtGui.QMainWindow):
             event.accept()
 
 
-## Make the app
+# Make the app
 app = QtGui.QApplication([])
 app.setAttribute(QtCore.Qt.AA_Use96Dpi)
 win = MainWindow()
@@ -360,11 +369,11 @@ win.setCentralWidget(area)
 win.resize(1200, 900)
 win.setWindowTitle('LabJack Live Plot')
 
-## Create docks, place them into the window one at a time.
-## Note that size arguments are only a suggestion; docks will still have to
-## fill the entire dock area and obey the limits of their internal widgets.
+# Create docks, place them into the window one at a time.
+# Note that size arguments are only a suggestion; docks will still have to
+# fill the entire dock area and obey the limits of their internal widgets.
 
-## Make parameter tree widget
+# Make parameter tree widget
 param_dock = Dock("Settings", (200, 900))
 ptree = ParameterTree()
 param_dock.addWidget(ptree)
@@ -377,7 +386,7 @@ if __name__ == '__main__':
     # initialize params
     avg = False
 
-    def_dir = op.join(op.expanduser("~"), "LabJackDAQ", "data")
+    def_dir = op.join("LabJackDAQ", "data")
     def_filenamex = "labjack_generic_daq.csv".format(def_dir, datetime.datetime.now())
     parser, args = get_args()
 
@@ -423,7 +432,6 @@ if __name__ == '__main__':
     csvfile = open(filenamex, 'a')
     fields = get_field_names(args.ch, inc, commas=False)
     daq_data = pd.DataFrame(columns=fields)
-
 
     params = make_options()
 
