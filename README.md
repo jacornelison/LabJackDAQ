@@ -9,6 +9,7 @@ This program is cross-platform and has been tested on Windows 10 and Linux. The 
 ## Installation
 1. `cd` into the working directory where you want this folder to live.
 2. Either copy the installation script or clone this repository into that folder 
+    - For linux, you can use `curl https://raw.githubusercontent.com/jacornelison/LabJackDAQ/master/install_ljd.sh -o install_ljd.sh`
     - the script will clone the repository automatically if the script is either not run in the repo directory or cannot find it in the working directory
 3. `sudo bash install_ljd.sh`
 4. `source ~/.bashrc`
