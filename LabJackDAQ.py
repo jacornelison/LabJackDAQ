@@ -165,7 +165,7 @@ def get_args():
                         action="store_true")
     parser.add_argument("--samprate", help="Set sample rate in milliseconds", default=50.0,
                         type=float)
-    parser.add_argument("--refreshrate", help="Set plot refresh rate in milliseconds Default = 50", default=1000.0,
+    parser.add_argument("--refreshrate", help="Set plot refresh rate in milliseconds Default = 50", default=50.0,
                         type=float)
     parser.add_argument("--ow", help="Overwrite input file. (Normally off)",
                         default=False, action="store_true")
