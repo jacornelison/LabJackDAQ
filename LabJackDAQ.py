@@ -29,7 +29,7 @@ from pyqtgraph.parametertree import Parameter, ParameterTree
 
 global filenamex, pltlist
 global area, params, ptree, timer
-global args, dstarttime
+global args, dstarttime, def_save_interval
 
 dstarttime = time.time()
 
@@ -172,6 +172,13 @@ def get_args():
     parser.add_argument("--diff",
                         help="Take Differential readings. Pos input on even channels, negative on input channel+1 (Normally off)",
                         default=False, action="store_true")
+    parser.add_argument("--archive", help="""
+    (Normally off) Puts the DAQ in an archive mode similar to GCP. Meant for long term (i.e. days or weeks) DAQ sessions. All 7 differential analog inputs from the LJ will be readout with generic input names (e.g. AIN0, AIN2, etc...) and new archive files will be created when file sizes reach a certain size to reduce computational load (Currently arbitrarily set to 200MB which lasts ~20hrs at 50ms sample rate).
+    Forces options:
+    --diff
+    --ch AIN0,AIN2,AIN4,AIN6,...,AIN12
+    --title yymmdd_HHMMSS""",
+                        default=False, action="store_true")
     return parser, parser.parse_args()
 
 
@@ -233,6 +240,39 @@ def change_file(param, value):
     filenamex = value
 
 
+def arc_check_and_update():
+    global filenamex, daq_data, args, inc, csvfile
+    size_thresh = 200*1024#*1024 # 200 MB
+    filesize = op.getsize(filenamex)
+    #print(f"Size: {filesize} of {size_thresh}")
+    if filesize>=size_thresh:
+        f"Saving Archive: {filenamex}"
+        daq_data.to_csv(filenamex)
+        csvfile.close()
+        newfname = op.join(args.dir, time.strftime("%y%m%d_%H%M%S", time.gmtime()) + ".csv")
+        filenamex = newfname
+        fields, daq_data, csvfile = init_data_file(args, inc)
+        params.param('daq', 'Save Location').setValue(newfname)
+        print(f"Creating New Archive: {newfname}")
+
+
+def init_data_file(args,inc):
+    global filenamex, daq_data, csvfile
+    fieldnames = get_field_names(args.ch, inc)
+    with open(filenamex, 'w') as csvfile:
+        csvfile.writelines(fieldnames)
+        csvfile.write("\n")
+        csvfile.flush()
+        csvfile.close()
+        #print("Writing data to file: {0}".format(filenamex))
+
+    csvfile = open(filenamex, 'a')
+    fields = get_field_names(args.ch, inc, commas=False)
+    daq_data = pd.DataFrame(columns=fields)
+
+    return fields, daq_data, csvfile
+
+
 # Populates the parameter tree with all of the DAQ and plotting options.
 # Options specific to the plots (color, scrolling, etc...) are created in the plotter class.
 def make_options():
@@ -252,7 +292,7 @@ def make_options():
              {'name': 'savebtn', 'title': 'Save', 'type': 'action'},
              {'name': 'save', 'title': 'AutoSave Options', 'type': 'group', 'children': [
                  {'name': 'state', 'title': 'AutoSave', 'type': 'bool', 'value': True},
-                 {'name': 'rate', 'title': 'Save Interval (ms)', 'type': 'float', 'value': 10 * 60 * 1000}
+                 {'name': 'rate', 'title': 'Save Interval (ms)', 'type': 'float', 'value': def_save_interval}
              ]},
          ]
          }
@@ -378,7 +418,7 @@ param_dock = Dock("Settings", (200, 900))
 ptree = ParameterTree()
 param_dock.addWidget(ptree)
 
-win.show()
+
 
 ###############################################
 # Main function
@@ -386,12 +426,24 @@ if __name__ == '__main__':
     # initialize params
     avg = False
 
-    def_dir = op.join("LabJackDAQ", "data")
+    def_dir = op.join("data")
     def_filenamex = "labjack_generic_daq.csv".format(def_dir, datetime.datetime.now())
+    def_save_interval = 10 * 60 * 1000  # Every 10 minutes
     parser, args = get_args()
 
-    inc = args.inc
-    diff = args.diff
+    win.show()
+
+    # Archive mode:
+    # Force differential measurements
+    # Force archive yymmdd_HHMMSS.csv naming convention
+    # Force read all channels and adopt AINX naming convention
+    # Only available in test and labjack mode for now.
+    if args.archive:
+        args.diff = True
+        args.title = time.strftime("%y%m%d_%H%M%S", time.gmtime())
+        args.ch = "AIN0,AIN2,AIN4,AIN6,AIN8,AIN10,AIN12"
+        def_save_interval = 5*60*1000 # Every five minutes
+
     # Initialize DAQ
     # Prioritize test option, then Agilent DMM, and lastly the LabJack.
     if args.test:
@@ -405,6 +457,10 @@ if __name__ == '__main__':
             dmmtype = "u6"
             dmm = u6.U6()
             dmm.getCalibrationData()
+
+
+    inc = args.inc
+    diff = args.diff
 
     # File management:
     if args.title[-4::] == ".csv":
@@ -421,17 +477,7 @@ if __name__ == '__main__':
         print("Using file: " + filenamex)
 
     # Open csvfile
-    fieldnames = get_field_names(args.ch, inc)
-    with open(filenamex, 'w') as csvfile:
-        csvfile.writelines(fieldnames)
-        csvfile.write("\n")
-        csvfile.flush()
-        csvfile.close()
-        print("Writing data to file: {0}".format(filenamex))
-
-    csvfile = open(filenamex, 'a')
-    fields = get_field_names(args.ch, inc, commas=False)
-    daq_data = pd.DataFrame(columns=fields)
+    fields, daq_data, csvfile = init_data_file(args, inc)
 
     params = make_options()
 
@@ -454,7 +500,12 @@ if __name__ == '__main__':
 
     save_timer = pg.QtCore.QTimer()
     save_timer.timeout.connect(save_csv)
-    save_timer.start(10 * 60 * 1000)
+    save_timer.start(def_save_interval)
+
+    if args.archive:
+        archive_timer = pg.QtCore.QTimer()
+        archive_timer.timeout.connect(arc_check_and_update)
+        archive_timer.start(2*1000) # check the file size every 10 seconds?
 
     timer_dict = {
         "daq": daq_timer,
