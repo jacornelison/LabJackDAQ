@@ -173,8 +173,11 @@ def get_args():
                         help="Take Differential readings. Pos input on even channels, negative on input channel+1 (Normally off)",
                         default=False, action="store_true")
     parser.add_argument("--archive", help="""
-    (Normally off) Puts the DAQ in an archive mode similar to BICEP's GCP. 
-    All inputs to the LabJack are recorded and a new file is created after the previous gets to a certain size""",
+    (Normally off) Puts the DAQ in an archive mode similar to GCP. Meant for long term (i.e. days or weeks) DAQ sessions. All 7 differential analog inputs from the LJ will be readout with generic input names (e.g. AIN0, AIN2, etc...) and new archive files will be created when file sizes reach a certain size to reduce computational load (Currently arbitrarily set to 200MB which lasts ~20hrs at 50ms sample rate).
+    Forces options:
+    --diff
+    --ch AIN0,AIN2,AIN4,AIN6,...,AIN12
+    --title yymmdd_HHMMSS""",
                         default=False, action="store_true")
     return parser, parser.parse_args()
 
@@ -268,6 +271,7 @@ def init_data_file(args,inc):
     daq_data = pd.DataFrame(columns=fields)
 
     return fields, daq_data, csvfile
+
 
 # Populates the parameter tree with all of the DAQ and plotting options.
 # Options specific to the plots (color, scrolling, etc...) are created in the plotter class.
@@ -414,7 +418,7 @@ param_dock = Dock("Settings", (200, 900))
 ptree = ParameterTree()
 param_dock.addWidget(ptree)
 
-win.show()
+
 
 ###############################################
 # Main function
@@ -424,9 +428,10 @@ if __name__ == '__main__':
 
     def_dir = op.join("data")
     def_filenamex = "labjack_generic_daq.csv".format(def_dir, datetime.datetime.now())
-    def_save_interval = 10 * 60 * 1000  # 10 minutes
+    def_save_interval = 10 * 60 * 1000  # Every 10 minutes
     parser, args = get_args()
 
+    win.show()
 
     # Archive mode:
     # Force differential measurements
@@ -437,7 +442,7 @@ if __name__ == '__main__':
         args.diff = True
         args.title = time.strftime("%y%m%d_%H%M%S", time.gmtime())
         args.ch = "AIN0,AIN2,AIN4,AIN6,AIN8,AIN10,AIN12"
-        def_save_interval = 5*60*1000
+        def_save_interval = 5*60*1000 # Every five minutes
 
     # Initialize DAQ
     # Prioritize test option, then Agilent DMM, and lastly the LabJack.
