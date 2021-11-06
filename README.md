@@ -33,15 +33,37 @@ That way, you can start the data acquisition from any directory and it should st
 
 Using the alias above, simply running the program will start the DAQ, saving the data from the `AIN0` channel to `LabJackDAQ/data/labjack_generic_daq.csv`.
 
-Some important arguments are:
-- `--title` - Sets the name of the data for saving. If the name already exists and overwrite is not enabled (`--ow`), the title have a sequential number appended to it (`your_title_1.csv`, `your_title_2.csv`, etc...). 
-- `--dir` - Sets the 'data' directory in which files output from the DAQ is saved.
-- `--ch` - Sets the names of the channels to be read. Each channel is read referenced to ground.
-- `--dmm` - Instead of using the LabJack, will instead try to read a single channel from an Agilent DMM
-- `--inc` - In addition to reading voltage data, an extra channel will be added which reads out of a Pro 3600 digital protractor.  
-- `--diff` - Reads a differential measurement between two `AIN` channels. Even channel numbers are the high side, the subsequent channel reads the low side.
-There's a few options that can be passed in the arguments.
-Check the help for more info (i.e. `python LabJack_DAQ.py --help`)
+The current arguments are:
+- `-h, --help`            show this help message and exit
+- `-a, --archive`         (Normally off) Puts the DAQ in an archive mode similar
+                        to GCP. Meant for long term (i.e. days or weeks) DAQ
+                        sessions. All 7 differential analog inputs from the LJ
+                        will be readout with generic input names (e.g. AIN0,
+                        AIN2, etc...) and new archive files will be created
+                        when file sizes reach a certain size to reduce
+                        computational load (Currently arbitrarily set to 200MB
+                        which lasts ~20hrs at 50ms sample rate). Forces
+                        options: `-dm --ch AIN0,AIN2,AIN4,...,AIN12
+                        --title yymmdd_HHMMSS`
+-  `--ch CH`               Select number of channels up to 13 by naming them.
+                        E.g. "T,V,T2,V2" (for labjack only)
+-  `-d, --diff`            Take Differential readings. Pos input on even
+                        channels, negative on input channel+1 (Normally off)
+-  `--dir DIR`             dir in filename
+-  `--dmm`                 Utilize Agilent DMM instead of U6 for DAQ, only 1
+                        channel. (Normally off)
+-  `-i, --inc`             Toggle acquisition from digital inclinometer (normally
+                        off)
+-  `-m, --mjd`             Timestamps will be converted to MJD (Normally off)
+-  `-o, --ow`              Overwrite input file. (Normally off)
+-  `--refreshrate REFRESHRATE`
+                        Set plot refresh rate in milliseconds Default = 50
+-  `--samprate SAMPRATE`   Set sample rate in milliseconds
+-  `-t, --test`            Disables DAQs and writes fake data for testing.
+                        (Normally off)
+-  `--title TITLE`         Change the default filename. def =
+                        labjack_generic_daq.csv
+
 
 ##### Examples
 
@@ -53,7 +75,8 @@ Check the help for more info (i.e. `python LabJack_DAQ.py --help`)
     - `ljdaq --dmm --inc`
 - Read two differential measurements between `AIN0`/`AIN1` and `AIN2`/`AIN3` (high/low respectively)
     - `ljdaq --diff --ch "Resistor 1,Resistor 2"`
-    
+- Read a single differential measurement, include the inclinometer and overwrite any files
+    - `ljdaq -d -i -o` or `ljdaq -dio`    
 
 ## Notes
 - The data folder is for local use only. There's a `gitignore` that excludes `.csv` files to prevent large data files from being committed.

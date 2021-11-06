@@ -1,15 +1,19 @@
-# Ay191_DAQ.py
-# DPV 2/9/17
+# LabJackDAQ.py
+#
+# DPV 2/9/17 -- origanally named Ay191_DAQ.py
 # Python code to be used for reading DMM (Agilent 34410A)
 # and digital incinometer (both via USB) for beam mapping
 # operates on unix systems
-
+#
 # JAC 06 Sep 2019
 # Code has been modified for a U6 Labjack and cleaned up a bit
-
-# JAC 25 Jun 2020
+#
+# JAC 25 Jun 2020 -- renamed to LabJackDAQ.py
 # Major overhaul to the code.
 # Now uses PyQtGraph for plotting and Pandas for data handling.
+# Compatible with Unix, Windows, OSX, and Raspberry Pi
+# Now git-controlled.
+
 
 # import other packages
 import usbtmc
@@ -31,8 +35,6 @@ global filenamex, pltlist
 global area, params, ptree, timer
 global args, dstarttime, def_save_interval
 
-dstarttime = time.time()
-
 
 # Subfunction for data recording and logging.
 ###############################################
@@ -47,14 +49,16 @@ def get_data():
     while samp_el < 1 / args.samprate:
         v = read_volts(len(args.ch.split(',')), dmmtype)
         volt = volt + np.array(v)
-        # rt = datetime.datetime.now() - time_start
         samp_el = time.time() - tstart
         count = count + 1
 
     v = volt / count
     v = v.tolist()
-    # el_time = time.time()
-    data_row.append(time.time())
+    if args.mjd:
+        data_row.append(pd.Timestamp(time.time(), unit='s').to_julian_date() - 2400000.5)  # Convert time to MJD
+    else:
+        data_row.append(time.time())
+
     data_row[1:1] = v
 
     # get inclinometer angle
@@ -64,7 +68,6 @@ def get_data():
         time.sleep(0.1)
         angle_str = ser.readline()
         angle_str = angle_str.split()
-        # inc_angle = findangle(angle_str)
         data_row.append(findangle(angle_str))
 
     if avg:
@@ -151,34 +154,40 @@ def findangle(angle_str):
 ###############################################
 def get_args():
     parser = argparse.ArgumentParser(description='Logs and plots timestream of data with various options')
-    parser.add_argument("--title", help="Change the default filename. def = {0}".format(def_filenamex),
-                        default=def_filenamex)
-    parser.add_argument("--dmm", help="Utilize Agilent DMM instead of U6 for DAQ, only 1 channel. (Normally off)",
+    parser.add_argument("-a", "--archive", help="""(Normally off) Puts the DAQ in an archive mode similar to GCP. 
+    Meant for long term (i.e. days or weeks) DAQ sessions. All 7 differential analog inputs from the LJ will be 
+    readout with generic input names (e.g. AIN0, AIN2, etc...) and new archive files will be created when file sizes 
+    reach a certain size to reduce computational load (Currently arbitrarily set to 200MB which lasts ~20hrs at 50ms 
+    sample rate). Forces options: --diff --mjd --ch AIN0,AIN2,AIN4,...,AIN12 --title yymmdd_HHMMSS""",
                         default=False, action="store_true")
-    parser.add_argument("--test", help="Disables DAQs and writes fake data for testing. (Normally off)",
-                        default=False, action="store_true")
-    parser.add_argument("--dir", help="dir in filename", default=def_dir)
     parser.add_argument("--ch",
                         help="Select number of channels up to 13 by naming them. E.g. \"T,V,T2,V2\" (for labjack only)",
                         default="AIN0")
-    parser.add_argument("--inc", help="Toggle acquisition from digital inclinometer (normally off)", default=False,
+
+    parser.add_argument("-d", "--diff",
+                        help="Take Differential readings. Pos input on even channels, negative on input channel+1 ("
+                             "Normally off)",
+                        default=False, action="store_true")
+    parser.add_argument("--dir", help="dir in filename", default=def_dir)
+    parser.add_argument("--dmm", help="Utilize Agilent DMM instead of U6 for DAQ, only 1 channel. (Normally off)",
+                        default=False, action="store_true")
+
+    parser.add_argument("-i", "--inc", help="Toggle acquisition from digital inclinometer (normally off)",
+                        default=False,
                         action="store_true")
-    parser.add_argument("--samprate", help="Set sample rate in milliseconds", default=50.0,
-                        type=float)
+    parser.add_argument("-m", "--mjd",
+                        help="Timestamps will be converted to MJD (Normally off)",
+                        default=False, action="store_true")
+    parser.add_argument("-o", "--ow", help="Overwrite input file. (Normally off)",
+                        default=False, action="store_true")
     parser.add_argument("--refreshrate", help="Set plot refresh rate in milliseconds Default = 50", default=50.0,
                         type=float)
-    parser.add_argument("--ow", help="Overwrite input file. (Normally off)",
+    parser.add_argument("--samprate", help="Set sample rate in milliseconds", default=50.0,
+                        type=float)
+    parser.add_argument("-t", "--test", help="Disables DAQs and writes fake data for testing. (Normally off)",
                         default=False, action="store_true")
-    parser.add_argument("--diff",
-                        help="Take Differential readings. Pos input on even channels, negative on input channel+1 (Normally off)",
-                        default=False, action="store_true")
-    parser.add_argument("--archive", help="""
-    (Normally off) Puts the DAQ in an archive mode similar to GCP. Meant for long term (i.e. days or weeks) DAQ sessions. All 7 differential analog inputs from the LJ will be readout with generic input names (e.g. AIN0, AIN2, etc...) and new archive files will be created when file sizes reach a certain size to reduce computational load (Currently arbitrarily set to 200MB which lasts ~20hrs at 50ms sample rate).
-    Forces options:
-    --diff
-    --ch AIN0,AIN2,AIN4,AIN6,...,AIN12
-    --title yymmdd_HHMMSS""",
-                        default=False, action="store_true")
+    parser.add_argument("--title", help="Change the default filename. def = {0}".format(def_filenamex),
+                        default=def_filenamex)
     return parser, parser.parse_args()
 
 
@@ -242,10 +251,10 @@ def change_file(param, value):
 
 def arc_check_and_update():
     global filenamex, daq_data, args, inc, csvfile
-    size_thresh = 200*1024#*1024 # 200 MB
+    size_thresh = 200 * 1024
     filesize = op.getsize(filenamex)
-    #print(f"Size: {filesize} of {size_thresh}")
-    if filesize>=size_thresh:
+
+    if filesize >= size_thresh:
         f"Saving Archive: {filenamex}"
         daq_data.to_csv(filenamex)
         csvfile.close()
@@ -256,7 +265,7 @@ def arc_check_and_update():
         print(f"Creating New Archive: {newfname}")
 
 
-def init_data_file(args,inc):
+def init_data_file(args, inc):
     global filenamex, daq_data, csvfile
     fieldnames = get_field_names(args.ch, inc)
     with open(filenamex, 'w') as csvfile:
@@ -264,7 +273,7 @@ def init_data_file(args,inc):
         csvfile.write("\n")
         csvfile.flush()
         csvfile.close()
-        #print("Writing data to file: {0}".format(filenamex))
+        # print("Writing data to file: {0}".format(filenamex))
 
     csvfile = open(filenamex, 'a')
     fields = get_field_names(args.ch, inc, commas=False)
@@ -329,7 +338,7 @@ def make_options():
 # Make a plotter class that handles all of the plotting of a specific channel.
 class Plotter():
     def __init__(self, chname):
-        global area, params, ptree
+        global area, params, ptree, args
         self.name = chname
         self.d = Dock(chname, size=(500, 300))
         self.w = pg.PlotWidget()
@@ -357,14 +366,16 @@ class Plotter():
     def update(self, data):
         self.curve.setPen(self.params['Color'].getRgb())
 
+        mjdtosec = 86400 - ((1 - args.mjd) * (86400 - (1 - args.mjd)))  # seconds per day
+
         if self.params['Scrolling', 'Scrolling']:
             N = self.params['Scrolling', 'Range (seconds)']
-            t = data[data.keys().to_list()[0]].values - dstarttime
+            t = data[data.keys().to_list()[0]].values * mjdtosec - dstarttime
             ind = (t >= (t[-1] - N))
-            self.curve.setData(data[data.keys().to_list()[0]].iloc[ind].values - dstarttime,
+            self.curve.setData(data[data.keys().to_list()[0]].iloc[ind].values * mjdtosec - dstarttime,
                                data[self.name].iloc[ind].values)
         else:
-            self.curve.setData(data[data.keys().to_list()[0]] - dstarttime, data[self.name])
+            self.curve.setData(data[data.keys().to_list()[0]] * mjdtosec - dstarttime, data[self.name])
 
 
 # Class that controls the main window GUI
@@ -418,8 +429,6 @@ param_dock = Dock("Settings", (200, 900))
 ptree = ParameterTree()
 param_dock.addWidget(ptree)
 
-
-
 ###############################################
 # Main function
 if __name__ == '__main__':
@@ -440,9 +449,10 @@ if __name__ == '__main__':
     # Only available in test and labjack mode for now.
     if args.archive:
         args.diff = True
+        args.mjd = True
         args.title = time.strftime("%y%m%d_%H%M%S", time.gmtime())
         args.ch = "AIN0,AIN2,AIN4,AIN6,AIN8,AIN10,AIN12"
-        def_save_interval = 5*60*1000 # Every five minutes
+        def_save_interval = 5 * 60 * 1000  # Every five minutes
 
     # Initialize DAQ
     # Prioritize test option, then Agilent DMM, and lastly the LabJack.
@@ -457,7 +467,6 @@ if __name__ == '__main__':
             dmmtype = "u6"
             dmm = u6.U6()
             dmm.getCalibrationData()
-
 
     inc = args.inc
     diff = args.diff
@@ -478,6 +487,12 @@ if __name__ == '__main__':
 
     # Open csvfile
     fields, daq_data, csvfile = init_data_file(args, inc)
+
+    # Official start time of the DAQ
+    # Change the epoch if using MJD
+    dstarttime = time.time()
+    if args.mjd:
+        dstarttime = (pd.Timestamp(dstarttime, unit='s').to_julian_date() - 2400000.5) * 86400
 
     params = make_options()
 
@@ -505,7 +520,7 @@ if __name__ == '__main__':
     if args.archive:
         archive_timer = pg.QtCore.QTimer()
         archive_timer.timeout.connect(arc_check_and_update)
-        archive_timer.start(2*1000) # check the file size every 10 seconds?
+        archive_timer.start(2 * 1000)  # check the file size every 10 seconds?
 
     timer_dict = {
         "daq": daq_timer,
