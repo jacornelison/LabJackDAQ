@@ -250,11 +250,12 @@ def change_file(param, value):
 
 
 def arc_check_and_update():
-    global filenamex, daq_data, args, inc, csvfile
-    size_thresh = 200 * 1024
+    # Check the files size and the elapsed time to make a new arc file
+    global filenamex, daq_data, args, inc, csvfile, dstarttime
+    size_thresh = 6*1024 #200 * 1024 * 1024
     filesize = op.getsize(filenamex)
-
-    if filesize >= size_thresh:
+    current_time = pd.Timestamp(time.time(), unit='s').to_julian_date() - 2400000.5
+    if filesize >= size_thresh or ((np.floor(current_time) - np.floor(dstarttime / 86400)) > 1):
         f"Saving Archive: {filenamex}"
         daq_data.to_csv(filenamex)
         csvfile.close()
@@ -263,6 +264,7 @@ def arc_check_and_update():
         fields, daq_data, csvfile = init_data_file(args, inc)
         params.param('daq', 'Save Location').setValue(newfname)
         print(f"Creating New Archive: {newfname}")
+        dstarttime = current_time * 86400
 
 
 def init_data_file(args, inc):
