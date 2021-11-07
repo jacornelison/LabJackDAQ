@@ -252,7 +252,7 @@ def change_file(param, value):
 def arc_check_and_update():
     # Check the files size and the elapsed time to make a new arc file
     global filenamex, daq_data, args, inc, csvfile, dstarttime
-    size_thresh = 6*1024 #200 * 1024 * 1024
+    size_thresh = 200 * 1024 * 1024
     filesize = op.getsize(filenamex)
     current_time = pd.Timestamp(time.time(), unit='s').to_julian_date() - 2400000.5
     if filesize >= size_thresh or ((np.floor(current_time) - np.floor(dstarttime / 86400)) > 1):
@@ -522,7 +522,7 @@ if __name__ == '__main__':
     if args.archive:
         archive_timer = pg.QtCore.QTimer()
         archive_timer.timeout.connect(arc_check_and_update)
-        archive_timer.start(2 * 1000)  # check the file size every 10 seconds?
+        archive_timer.start(10 * 60 * 1000)  # check the file size every 10 minutes?
 
     timer_dict = {
         "daq": daq_timer,
@@ -531,7 +531,7 @@ if __name__ == '__main__':
     }
     # Initialize inclinometer if wanted
     if inc:
-        ser = serial.Serial("/dev/ttyUSB0", baudrate=9600);
+        ser = serial.Serial("/dev/ttyUSB0", baudrate=9600)
         ser.close()
         ser.open()
 
